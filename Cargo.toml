@@ -1,0 +1,31 @@
+[package]
+name = "toaster"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+dotenv = { version = "0.15.0" }
+tracing = "0.1.23"
+tracing-subscriber = "0.2"
+
+[dependencies.serenity]
+default-features = false
+features = [
+    "builder",
+    "chrono",
+    "client",
+    "framework",
+    "gateway",
+    "http",
+    "model",
+    "standard_framework",
+    "utils",
+    "rustls_backend",
+    "cache",
+]
+version = "0.11"
+[dependencies.tokio]
+version = "1.0"
+features = ["macros", "signal", "rt-multi-thread"]
