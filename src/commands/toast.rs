@@ -16,8 +16,10 @@ use std::time::Duration;
 const TOASTER: &'static str = "toaster";
 const SVN_UPDATE: &'static str = "svn";
 const MOVE_SVN: &'static str = "mv";
+const PYTHON: &'static str = "python";
 static mut SVN_BOOL: bool = false;
 static mut TOASTER_BOOL: bool = false;
+static mut FILE_SIGN: bool = false;
 const UPDATE_CHANNEL: ChannelId = ChannelId(832725602728935454);
 
 
@@ -27,6 +29,8 @@ pub fn toast(){
 
     let webd =  env::var("WEBDIR").expect("Expected a web directory");
     let gamef = env::var("GAMEDIR").expect("Expected a directory for game files");
+    let sign = env::var("SIGN").expect("Unable to load python script");
+    let priv_key = env::var("PRIV_KEY").expect("Unable to use private key!");
 
     unsafe{TOASTER_BOOL = true};
     let mut toasting =Command::new(TOASTER);
@@ -39,7 +43,18 @@ if let Ok(mut child) = toasting.spawn() {
 }else {
     println!("never started");
 }
-    
+unsafe{FILE_SIGN == true};
+let mut py = Command::new(PYTHON);
+py.arg(&sign)
+.arg(&webd)
+.arg(&priv_key);
+if let Ok(mut child) = py.spawn(){
+    child.wait().expect("Failed to run program");
+    println!("Child exited successfully");
+    unsafe{FILE_SIGN == false};
+}else{
+    println!("Never Started")
+}
     //let id = toasting.id();
     //println!("ID for toaster is {}", id);
     
@@ -117,8 +132,8 @@ pub async fn update(ctx: &Context, msg: &Message)  -> CommandResult {
     }
     if msg.channel_id != UPDATE_CHANNEL{return Ok(());}else{
   
-        if unsafe{TOASTER_BOOL == false}{
-            msg.channel_id.say(&ctx.http, "Toaster has finished running. Go ahead and post your update!").await?;
+        if unsafe{TOASTER_BOOL == false && FILE_SIGN == false}{
+            msg.channel_id.say(&ctx.http, "Toaster has finished running and the files are now signed! Go ahead and post your update!").await?;
         }   
     }
  
